@@ -1,0 +1,19 @@
+{
+  "name": "pysae",
+  "version": "1.0.0",
+  "description": "A test",
+  "repository": "test",
+  "main": "clientserver.js",
+  "dependencies": {
+    "express": "^4.11.1",
+    "redis": "^0.12.1",
+    "socket.io": "^1.3.2",
+    "socket.io-client": "^1.3.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
