@@ -7,7 +7,9 @@ var net = require('net');
 
 var client = new net.Socket();
 
-client.connect(clientPort, clientIP, function() {});
+client.connect(clientPort, clientIP, function() {
+  console.log('Connected!');
+});
 
 client.on('data', function(chunk) {
   console.log('Received: ', chunk);
