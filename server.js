@@ -1,46 +1,40 @@
 // Load the TCP Library
 var net = require('net');
 var redis = require('redis');
+var binary = require('binary');
+// var Struct = require('struct').Struct;
 var redisCli;
 
 // Initializers
-require('./config/initializers/01_redis.js');
-redisCli = redis.redisCli;
+require('./config/initializers/01_redis.js')()
 
-// Middlewares
-// var middleware = require('./config/middleware');
+.then(function () {
 
-// io.use(middleware.authorization());
+  redisCli = redis.redisCli;
 
-// // Requests hanlding
-// io.sockets.on('connection', function (socket) {
-//   console.log('connection');
-//   socket.on('my event', function (data) {
-//     console.log('data received: ', data);
-//   });
-// });
+  net.createServer(function(socket) {
+    if (socket.remoteAddress !== '127.0.0.1') {
+      return socket.destroy();
+    }
 
-var server = net.createServer(function(socket) {
-  if (socket.remoteAddress !== '127.0.0.1') {
-    return socket.destroy();
-  }
+    // On connection, send this Buffer to the BIV
+    socket.write(new Buffer([0x02, 0x00, 0x05, 0x49, 0xFF, 0xFF, 0x03], 'hex'));
 
-  socket.write('Echo server\r\n');
-  console.log('Remote ip: ', socket.remoteAddress);
-  console.log('Remote port: ', socket.remotePort);
+    socket.on('data', function (chunk) {
+      var vars = binary.parse(chunk)
+        .word8('entete')
+        .word16bu('longueur')
+        .word8('typeMessage')
+        .word16bu('idBiv')
+        .word8('timeout')
+        .tap(function(vars){
+          console.dir(vars)
+        });
+    });
 
-  socket.on('connect', function () {
-    console.log('Remote ip: ', socket.remoteAddress);
-    console.log('Remote port: ', socket.remotePort);
-  });
+    socket.on('close', function(data) {
+      console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
+    });
+  }).listen(3013, '127.0.0.1');
 
-  socket.on('data', function (chunk) {
-    console.log('chunck: ', chunk);
-  });
-
-  sock.on('close', function(data) {
-    console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
-  });
 });
-
-server.listen(3013, '127.0.0.1');

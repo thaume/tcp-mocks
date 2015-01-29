@@ -1,15 +1,31 @@
+var Promise = require('bluebird');
 var redis = require('redis');
 var redisCli = redis.createClient();
 
-redisCli.flushall();
-redisCli.on('error', function (err) {
-  console.log('error event - ' + client.host + ':' + client.port + ' - ' + err);
-});
-var bivIps = [
-  'biv-ips',
-  '0.0.0.0', 'connected',
-  '0.0.0.1', 'connected'
-];
-redisCli.hmset(bivIps, redis.print);
+module.exports = function () {
 
-redis.redisCli = redisCli;
+  return new Promise(function (resolve, reject) {
+    redisCli.on('error', function (err) {
+      console.log('error event - ' + client.host + ':' + client.port + ' - ' + err);
+      return reject();
+    });
+
+    // Cleanup the redis database on start
+    redisCli.flushall();
+
+    // BIVs ids
+    var bivIps = [
+      'biv-ips',
+      '0.0.0.0', 'connected',
+      '0.0.0.1', 'connected'
+    ];
+
+    // Inject base data in redis and resolve the function
+    redisCli.hmset(bivIps, function () {
+      redis.redisCli = redisCli;
+      return resolve();
+    });
+
+  });
+
+}

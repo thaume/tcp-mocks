@@ -5,10 +5,13 @@
   "repository": "test",
   "main": "clientserver.js",
   "dependencies": {
+    "binary": "^0.3.0",
+    "bluebird": "^2.9.3",
     "express": "^4.11.1",
     "redis": "^0.12.1",
     "socket.io": "^1.3.2",
-    "socket.io-client": "^1.3.2"
+    "socket.io-client": "^1.3.2",
+    "struct": "0.0.8"
   },
   "devDependencies": {},
   "scripts": {
