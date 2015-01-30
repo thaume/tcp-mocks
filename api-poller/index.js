@@ -1,18 +1,21 @@
 var Promise = require('bluebird');
 var request = Promise.promisify(require('request'));
+var CronJob = require('cron').CronJob;
+
 // Departures API settings
 var departuresPollUrl = 'https://api.navitia.io/v1/coverage/fr-idf/coords/2.328245;48.878772/departures';
-var departuresPollAuth = 'aac2820a-38f7-46ba-9d71-5c3e4b06a0a8';
+var departuresPollAuth = process.env.API_POLL_KEY || '';
 
-setInterval(function() {
+// Execute 'pollApi' every minute
+new CronJob('* * * * * *', function(){
   pollApi();
-}, 3000);
+}, null, true);
 
 function pollApi () {
   request({
     url: departuresPollUrl,
     headers: {
-      'Authorization': departuresPollAuth
+      'Authorization': departuresPollAuth // Auth for the API
     }
   }).spread(function(response, body) {
     var results = JSON.parse(body);
