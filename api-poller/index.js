@@ -5,17 +5,17 @@ var redis = require('redis');
 var redisCli = redis.createClient();
 
 // Departures API settings
-var stopPoint1 = 'stop_point:RTP:SP:3926296';
-var stopPoint2 = 'stop_point:RTP:SP:3926329';
 var apiDownMock = 0;
 
+var stopPoint1 = 'stop_point:RTP:SP:3926296';
+var stopPoint2 = 'stop_point:RTP:SP:3926329';
+
+// Put your API key in an env vars
 var departuresPollAuth = process.env.API_POLL_KEY || '';
-var departuresPollUrl = 'http://api.navitia.io/v1/coverage/fr-idf/coords/2.328245;48.878772/departures';
-var departuresPollUrl2 = 'http://api.navitia.io/v1/journeys?from=' + stopPoint1 +
-                          '&to=' + stopPoint2 + '&datetime=';
+var departuresPollUrl = 'http://api.navitia.io/v1/journeys';
 
 // Execute 'pollApi' every minute
-new CronJob('* * * * * *', function(){
+new CronJob('* * * * *', function() {
   console.log('minute ', new Date().getMinutes());
   if (apiDownMock < 4) {
     pollApi();
@@ -24,16 +24,23 @@ new CronJob('* * * * * *', function(){
 
 // function pollApi () {
 //   request({
-//     url: departuresPollUrl2 + getCurrDate(), // Refresh date everytime
+//     url: departuresPollUrl, // Refresh date everytime
+//     qs: {
+//       from: stopPoint1,
+//       to: stopPoint2,
+//       datetime: getCurrDate()
+//     },
 //     headers: {
-//       // 'Authorization': departuresPollAuth // Auth for the API
-//     }
+//       'Authorization': departuresPollAuth // Auth for the API
+//     },
+//     timeout: 1500
 //   }).spread(function(response, body) {
 //     try {
 //       var results = JSON.parse(body);
 //       console.log('Body: ', results.journeys[0].sections[0].departure_date_time);
 //       updateRedisData(results.journeys[0].sections[0].departure_date_time);
 //     } catch (e) {
+//       console.log('Raw body: ', response);
 //       console.log('Error while parsing JSON: ', e);
 //     }
 
@@ -42,6 +49,7 @@ new CronJob('* * * * * *', function(){
 //   });
 // };
 
+// Could be used for testing purpose
 function pollApi () {
   if (!apiDownMock) {
     updateRedisData('20150130T101500');

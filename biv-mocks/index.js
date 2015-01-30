@@ -4,7 +4,6 @@ var clientIP = '127.0.0.1';
 var binary = require('binary');
 
 var net = require('net');
-
 var client = new net.Socket();
 
 client.connect(clientPort, clientIP, function() {

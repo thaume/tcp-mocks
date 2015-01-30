@@ -11,16 +11,17 @@ require('./config/initializers/01_redis.js')()
 
   var redisCli = redis.redisCli;
 
-  // Redis channels bindings
-  redisCli.on('message', function (channel, message) {
-    console.log('client1 channel ' + channel + ': ' + message);
-  });
   redisCli.subscribe('pysae::traffic-update');
 
   net.createServer(function(socket) {
     if (socket.remoteAddress !== '127.0.0.1') {
       return socket.destroy();
     }
+
+    // Redis channels bindings
+    redisCli.on('message', function (channel, message) {
+      console.log('client1 channel ' + channel + ': ' + message);
+    });
 
     // On connection, send this Buffer to the BIV, asking for authentication
     socket.write(new Buffer([0x02, 0x00, 0x05, 0x49, 0xFF, 0xFF, 0x03], 'hex'));
