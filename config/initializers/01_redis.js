@@ -6,7 +6,7 @@ module.exports = function () {
 
   return new Promise(function (resolve, reject) {
     redisCli.on('error', function (err) {
-      console.log('error event - ' + client.host + ':' + client.port + ' - ' + err);
+      console.log('error event - ' + redisCli.host + ':' + redisCli.port + ' - ' + err);
       return reject();
     });
 
