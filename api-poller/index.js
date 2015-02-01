@@ -12,7 +12,7 @@ var stopPoint2 = 'stop_point:RTP:SP:3926329';
 
 // Put your API key in an env vars
 var departuresPollAuth = process.env.API_POLL_KEY || '';
-var departuresPollUrl = 'http://api.navitia.io/v1/journeys';
+var departuresPollUrl = 'https://api.navitia.io/v1/journeys/';
 
 // Execute 'pollApi' every minute
 new CronJob('* * * * *', function() {
@@ -22,49 +22,50 @@ new CronJob('* * * * *', function() {
   }
 }, null, true);
 
-// function pollApi () {
-//   request({
-//     url: departuresPollUrl, // Refresh date everytime
-//     qs: {
-//       from: stopPoint1,
-//       to: stopPoint2,
-//       datetime: getCurrDate()
-//     },
-//     headers: {
-//       'Authorization': departuresPollAuth // Auth for the API
-//     },
-//     timeout: 1500
-//   }).spread(function(response, body) {
-//     try {
-//       var results = JSON.parse(body);
-//       console.log('Body: ', results.journeys[0].sections[0].departure_date_time);
-//       updateRedisData(results.journeys[0].sections[0].departure_date_time);
-//     } catch (e) {
-//       console.log('Raw body: ', response);
-//       console.log('Error while parsing JSON: ', e);
-//     }
+function pollApi () {
+  request({
+    url: departuresPollUrl, // Refresh date everytime
+    qs: {
+      from: stopPoint1,
+      to: stopPoint2,
+      datetime: getCurrDate()
+    },
+    headers: {
 
-//   }).catch(function(err) {
-//     console.error('Error: ', err);
-//   });
-// };
+      'Authorization': departuresPollAuth // Auth for the API
+    },
+    timeout: 1500
+  }).spread(function(response, body) {
+    try {
+      var results = JSON.parse(body);
+      console.log('Body: ', results.journeys[0].sections[0].departure_date_time);
+      updateRedisData(results.journeys[0].sections[0].departure_date_time);
+    } catch (e) {
+      console.log('Raw body: ', response);
+      console.log('Error while parsing JSON: ', e);
+    }
+
+  }).catch(function(err) {
+    console.error('Error: ', err);
+  });
+};
 
 // Could be used for testing purpose
-function pollApi () {
-  if (!apiDownMock) {
-    updateRedisData('20150130T101500');
-  }
-  if (apiDownMock === 1) {
-    updateRedisData('20150130T101500');
-  }
-  if (apiDownMock === 2) {
-    updateRedisData('20150130T103000');
-  }
-  if (apiDownMock === 3) {
-    updateRedisData('20150130T103700');
-  }
-  apiDownMock++;
-}
+// function pollApi () {
+//   if (!apiDownMock) {
+//     updateRedisData('20150130T101500');
+//   }
+//   if (apiDownMock === 1) {
+//     updateRedisData('20150130T101500');
+//   }
+//   if (apiDownMock === 2) {
+//     updateRedisData('20150130T103000');
+//   }
+//   if (apiDownMock === 3) {
+//     updateRedisData('20150130T103700');
+//   }
+//   apiDownMock++;
+// }
 
 function getCurrDate () {
   var d = new Date();
