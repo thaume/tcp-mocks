@@ -36,17 +36,12 @@ function pollApi () {
     },
     timeout: 1500
   }).spread(function(response, body) {
-    try {
-      var results = JSON.parse(body);
-      console.log('Body: ', results.journeys[0].sections[0].departure_date_time);
-      updateRedisData(results.journeys[0].sections[0].departure_date_time);
-    } catch (e) {
-      console.log('Raw body: ', response);
-      console.log('Error while parsing JSON: ', e);
-    }
-
+    var results = JSON.parse(body);
+    console.log('Body: ', results.journeys[0].sections[0].departure_date_time);
+    updateRedisData(results.journeys[0].sections[0].departure_date_time);
   }).catch(function(err) {
-    console.error('Error: ', err);
+    console.log('Raw body: ', response);
+    console.log('Error while parsing data: ', err);
   });
 };
 

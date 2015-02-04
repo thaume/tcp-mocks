@@ -7,7 +7,7 @@ module.exports = function () {
   return new Promise(function (resolve, reject) {
     redisCli.on('error', function (err) {
       console.log('error event - ' + redisCli.host + ':' + redisCli.port + ' - ' + err);
-      return reject();
+      return reject(err);
     });
 
     // Cleanup the redis database on start
